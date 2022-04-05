@@ -1,0 +1,21 @@
+library(igraph)
+
+# SF LA Den DAL CHI ATL NYC BOSS
+# create igraph object.
+
+# assign edge's width as a function of weights.
+E(g)$width <- E(g)$weight + min(E(g)$weight) + 1 # offset=1
+plot(g)
+
+plot(g)
+
+eccentricity(g, vids = V(g), mode = c("all", "out", "in", "total"))
+
+diameter(gu, directed = FALSE
+)
+diameter(g, directed = FALSE)
+
+centr_degree(g,mode = c("all", "out", "in", "total"))
+centr_degree(gu,mode = c("all", "out", "in", "total"))
+
+closeness(gu)

@@ -1,0 +1,67 @@
+"0","testRoundOfPoker()
+"
+"1","Please look at the graphics window to see the current hand.
+
+The score of each player is one of the following:
+	9 = Straight Flush
+	8 = Four of a Kind
+	7 = Full House
+	6 = Flush
+	5 = Straight
+	4 = Three of a Kind
+	3 = Two Pair
+	2 = Pair
+	1 = Highcard
+The scores for this hand are:
+	Player 1: "
+"1"," "
+"1","2"
+"1"," "
+"1","
+	Player 2: "
+"1"," "
+"1","2"
+"1"," "
+"1","
+	Player 3: "
+"1"," "
+"1","1"
+"1"," "
+"1","
+	Player 4: "
+"1"," "
+"1","2"
+"1"," "
+"1","
+	Player 5: "
+"1"," "
+"1","2"
+"1"," "
+"1","
+	Player 6: "
+"1"," "
+"1","1"
+"1"," "
+"1","
+	Player 7: "
+"1"," "
+"1","3"
+"1"," "
+"1","
+	Player 8: "
+"1"," "
+"1","1"
+"1"," "
+"1","
+	Player 9: "
+"1"," "
+"1","1"
+"1"," "
+"1",".
+The winners of this hand are Players"
+"1"," "
+"1","7"
+"1"," "
+"1",".
+
+Thank you for playing."

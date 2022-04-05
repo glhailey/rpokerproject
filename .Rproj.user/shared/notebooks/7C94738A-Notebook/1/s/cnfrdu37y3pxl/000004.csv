@@ -1,0 +1,11 @@
+"0","library(""poker"")
+"
+"2","
+Attaching package: ‘poker’
+
+"
+"2","The following object is masked _by_ ‘.GlobalEnv’:
+
+    dotTransformToRank
+
+"
