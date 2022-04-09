@@ -19,10 +19,19 @@ scoreHighCard <- function(oneHand) {
   oneHand <- oneHand$ranks
   wildCardCount <- sum(oneHand == -1)
   if(wildCardCount){
-    return(14/28)
+    high = 14
+    wildCardCount <- wildCardCount - 1
+  } else {
+    high = max(oneHand)
+  }
+  
+  if(wildCardCount){
+    kicker = 14
+  } else {
+    kicker = max(oneHand[-which(oneHand==high)[1]])
   }
 	
-  max(oneHand) / 28
+  high / 28 + kicker / (28*28)
 }
 
 
@@ -295,7 +304,7 @@ scoreStraightFlushRanker <- function(oneHand)  {
   
   oneHand <- oneHand[ordering]
   suits <- suits[ordering]
-  print(suits)
+  #print(suits)
   
   
   suits <- append(suits, suits[which(oneHand == 14)])
@@ -508,8 +517,8 @@ handFrame <- function(players, board) {
 	hands
 }
 
-customRoundOfPoker <- function(customRankFunctions, wildCardNumber) {
-	alias <- c("Player 1", "Player 2","Player 3", "Player 4", "Player 5", "Player 6", "Player 7", "Player 8", "Player 9")
+customRoundOfPoker <- function(customRankFunctions, wildCardNumber, numberOfPlayers, silent = F) {
+	alias <- sprintf("Player %d", 1:numberOfPlayers)
 	nPlayers <- length(alias)
 	position <- nPlayers
 
@@ -544,49 +553,109 @@ customRoundOfPoker <- function(customRankFunctions, wildCardNumber) {
 	}
 	
 	
-	print(bestHand)
-	print(incremental)
+	#print(bestHand)
+	#print(incremental)
 
 #score <- showdown(cards)
 	winners <- bestHand == max(bestHand)
-	print(max(incremental[which(winners)]))
-	print(incremental == max(incremental[which(winners)]))
-	print(winners & incremental == max(incremental[which(winners)]))
+	#print(max(incremental[which(winners)]))
+	#print(incremental == max(incremental[which(winners)]))
+	#print(winners & incremental == max(incremental[which(winners)]))
 	winners <- winners & incremental == max(incremental[which(winners)])
 	winners <- which(winners)
 
-	cgiCards <- hand(players, board)
 	
-	round <- 1
-	cgiPlayers(round, alias, position, cgiCards)
-	round <- 2
-	cgiPlayers(round, alias, position, cgiCards)
-	round <- 3
-	cgiPlayers(round, alias, position, cgiCards)
-	round <- 4
-	cgiPlayers(round, alias, position, cgiCards)
+	
+	if(!silent){
+	  cgiCards <- hand(players, board)
+	  
 
-	cat("Please look at the graphics window to see the current hand.\n\nThe score of each player is one of the following:\n\t9 = Straight Flush\n\t8 = Four of a Kind\n\t7 = Full House\n\t6 = Flush\n\t5 = Straight\n\t4 = Three of a Kind\n\t3 = Two Pair\n\t2 = Pair\n\t1 = Highcard\nThe scores for this hand are:\n\t")
-	cat(sprintf("\n\t%s: %d",alias, bestHand))
-	cat("\nThe winners of this hand are Players",winners,".\n\nThank you for playing.")
+	  round <- 1
+  	cgiPlayers(round, alias, position, cgiCards)
+  	round <- 2
+  	cgiPlayers(round, alias, position, cgiCards)
+  	round <- 3
+  	cgiPlayers(round, alias, position, cgiCards)
+	  round <- 4
+  	cgiPlayers(round, alias, position, cgiCards)
+  
+  	cat("Please look at the graphics window to see the current hand.\n\nThe score of each player is one of the following:\n\t9 = Straight Flush\n\t8 = Four of a Kind\n\t7 = Full House\n\t6 = Flush\n\t5 = Straight\n\t4 = Three of a Kind\n\t3 = Two Pair\n\t2 = Pair\n\t1 = Highcard\nThe scores for this hand are:\n\t")
+  	cat(sprintf("\n\t%s: %d",alias, bestHand))
+  	cat("\nThe winners of this hand are Players",winners,".\n\nThank you for playing.\n")
+  	
+	  
+	}
+	
+	#print(players)
+	#print((players[winners,]))
+	#print(dotTransformToRank(players[winners,]))
+	#print(data.frame(col = dotTransformToRank(players[winners,])))
+	
+	# I can't seem to figure out how to standardize it for both cases, and I don't know why r is fighting me with this
+	if(length(winners) <= 1){
+	  winRanks <- matrix(dotTransformToRank(players[winners,]), byrow=F, ncol = 1)
+	  winSuits <- matrix(dotTransformToSuit(players[winners,]), byrow=F, ncol = 1)
+	} else {
+	  winRanks <- matrix(dotTransformToRank(players[winners,]), byrow=T, nrow = length(winners))
+	  winSuits <- matrix(dotTransformToSuit(players[winners,]), byrow=T, nrow = length(winners))
+	}
+	
+  
+  
+  
+  #print(winRanks)
+  
+	return (
+	  list(winningHands = data.frame( 
+	        ranks.1 = winRanks[1,] 
+	      , ranks.2 = winRanks[2,]
+	      , suits.1 = winSuits[1,]
+	      , suits.2 = winSuits[2,])
+	   , winningScore = bestHand[winners][1])
+	)
 }
 
 # Default game of poker
-customRoundOfPoker(list(scoreHighCard, scorePairRanker, scoreTwoPairRanker, scoreTripRanker,  scoreStraightRanker, scoreFlushRanker, scoreFullHouseRanker, scoreQuadRanker),0)
+customRoundOfPoker(list(scoreHighCard, scorePairRanker, scoreTwoPairRanker, scoreTripRanker,  scoreStraightRanker, scoreFlushRanker, scoreFullHouseRanker, scoreQuadRanker),0,9)
 
-# Default game of poker with 4 wildcards
-customRoundOfPoker(list(scoreHighCard, scorePairRanker, scoreTwoPairRanker, scoreTripRanker,  scoreStraightRanker, scoreFlushRanker, scoreFullHouseRanker, scoreQuadRanker),4)
+  # Default game of poker with 4 wildcards
+customRoundOfPoker(list(scoreHighCard, scorePairRanker, scoreTwoPairRanker, scoreTripRanker,  scoreStraightRanker, scoreFlushRanker, scoreFullHouseRanker, scoreQuadRanker),4,9)
 
 # Game of poker with no pairs
-customRoundOfPoker(list(scoreHighCard, scoreTripRanker ,scoreQuadRanker, scoreStraightRanker ,scoreFullHouseRanker, scoreFlushRanker),4)
+customRoundOfPoker(list(scoreHighCard, scoreTripRanker ,scoreQuadRanker, scoreStraightRanker ,scoreFullHouseRanker, scoreFlushRanker),4,9)
 
+
+
+```
+
+Here's a demonstration of how the data is output, and how to read it
+
+```{r}
+
+# Game of poker with no pairs
+round <- customRoundOfPoker(list(scoreHighCard, scoreTripRanker ,scoreQuadRanker, scoreStraightRanker ,scoreFullHouseRanker, scoreFlushRanker),4,9, silent = T)
+
+print( round)
+print( round$winningHands[1,])
+print( round$winningHands[1,1:2])
+print( round$winningScore)
 
 ```
 
 
 ```{r}
 normalPokerHands <- list(scoreHighCard, scorePairRanker, scoreTwoPairRanker, scoreTripRanker,  scoreStraightRanker, scoreFlushRanker, scoreFullHouseRanker, scoreQuadRanker)
-customRoundOfPoker(normalPokerHands,0)
+
+# Here's what the loop would look like
+scores = rep(0,length(normalPokerHands))
+for(i in 1:1000){
+  round <- customRoundOfPoker(normalPokerHands,1,10, silent = T)
+  scores[round$winningScore] <- scores[round$winningScore] +1
+  
+  # firstHandRanks <- round$winningHands[1]
+}
+
+barplot(scores, names.arg = c("high","pair","two-pair","trip","straight","flush","full house","quad"))
 
 
 ```
