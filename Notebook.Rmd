@@ -62,11 +62,14 @@ scoreTwoPairRanker <- function(oneHand) {
   
   run <- rle(oneHand)
   # Add a 14 rank of length 0 to the run. This comes into play with multiple wildcards
-  rankValues <- append(14,run$values)
-				#the unique ranks
-	rankLengths <- append(0,run$lengths)
-				#the length of the unique ranks
-	
+  if(run$values[1]!=14){
+      rankValues <- append(14,run$values)
+	    rankLengths <- append(0,run$lengths)
+  } else {
+     rankValues <- run$values
+     rankLengths <- run$lengths
+  }
+  
 	pairRank <- (rankValues[(rankLengths + wildCardCount) >= 2])
 				# where the wildcards and the cards in the hand make a pair
 	
@@ -108,12 +111,15 @@ scoreTripRanker <- function(oneHand)  {
   oneHand <- sort(oneHand[oneHand != -1],decreasing=TRUE)
   
   run <- rle(oneHand)
-  # Add a 14 rank of length 0 to the run. This comes into play with multiple wildcards
-  rankValues <- append(14,run$values)
-				#the unique ranks
-	rankLengths <- append(0,run$lengths)
-				#the length of the unique ranks
-	
+ # Add a 14 rank of length 0 to the run. This comes into play with multiple wildcards
+  if(run$values[1]!=14){
+      rankValues <- append(14,run$values)
+	    rankLengths <- append(0,run$lengths)
+  } else {
+     rankValues <- run$values
+     rankLengths <- run$lengths
+  }
+  
 	tripRank <- (rankValues[(rankLengths + wildCardCount) >= 3])
 				# where the wildcards and the cards in the hand make a pair
 	
@@ -155,10 +161,14 @@ scoreFullHouseRanker <- function(oneHand)  {
   
   run <- rle(oneHand)
   # Add a 14 rank of length 0 to the run. This comes into play with multiple wildcards
-  rankValues <- append(14,run$values)
-				#the unique ranks
-	rankLengths <- append(0,run$lengths)
-				#the length of the unique ranks
+  if(run$values[1]!=14){
+      rankValues <- append(14,run$values)
+	    rankLengths <- append(0,run$lengths)
+  } else {
+     rankValues <- run$values
+     rankLengths <- run$lengths
+  }
+  
 	
 	tripRank <- (rankValues[(rankLengths + wildCardCount) >= 3])
 	pairRank <- (rankValues[(rankLengths + wildCardCount) >= 2])
@@ -192,6 +202,8 @@ scoreFullHouseRanker(data.frame(ranks = c(1,2,3,4,5,-1,-1,-1))) * 28
 scoreFullHouseRanker(data.frame(ranks = c(1,2,3,5,5,-1,-1,-1))) * 28
 scoreFullHouseRanker(data.frame(ranks = c(3,3,3,4,4,-1,-1))) * 28
 scoreFullHouseRanker(data.frame(ranks = c(3,3,3,2,2,-1,-1))) * 28
+scoreFullHouseRanker(data.frame(ranks = c(14,14,10,14,11,10,8))) * 28
+
 
 scoreStraightRanker <- function(oneHand)  {
   oneHand <- oneHand$ranks
@@ -204,13 +216,13 @@ scoreStraightRanker <- function(oneHand)  {
   oneHand <- sort(oneHand[oneHand != -1],decreasing=TRUE)
   run <- rle(oneHand)
   # Add a 14 rank of length 0 to the run. This comes into play with multiple wildcards
-  rankValues <- run$values
-				#the unique ranks
-
-	if(sum(rankValues==14) > 0){
-	  rankValues <- append(rankValues,14)
-	        # Handle the case of ace low
-	}
+  if(run$values[1]!=14){
+      rankValues <- append(14,run$values)
+	    rankLengths <- append(0,run$lengths)
+  } else {
+     rankValues <- run$values
+     rankLengths <- run$lengths
+  }
 	
 	for(startIndex in 1:length(rankValues)){
     straightRun <- 1
@@ -572,8 +584,9 @@ customRoundOfPoker(list(scoreHighCard, scoreTripRanker ,scoreQuadRanker, scoreSt
 ```
 
 
-  ```{r}
-customRoundOfPoker(normalPokerHands)
+```{r}
+normalPokerHands <- list(scoreHighCard, scorePairRanker, scoreTwoPairRanker, scoreTripRanker,  scoreStraightRanker, scoreFlushRanker, scoreFullHouseRanker, scoreQuadRanker)
+customRoundOfPoker(normalPokerHands,0)
 
 
 ```
